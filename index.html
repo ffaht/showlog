@@ -1,0 +1,999 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>show log</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=IBM+Plex+Mono:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #0d0d0b;
+      --surface: #131310;
+      --surface2: #181814;
+      --text: #dedad0;
+      --muted: #6e6b65;
+      --divider: #1e1e1a;
+      --amber-bg: #271c08;
+      --amber-text: #c08030;
+      --amber-border: #302010;
+      --blue-bg: #09101c;
+      --blue-text: #5282a8;
+      --blue-border: #0d1a2c;
+      --hl-bg: #22180a;
+      --hl-text: #d4943c;
+      --hl-border: #3a2510;
+    }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'IBM Plex Mono', 'Courier New', monospace;
+      min-height: 100vh;
+      padding: 4rem 2rem 4rem;
+      max-width: 920px;
+      margin: 0 auto;
+    }
+    header {
+      margin-bottom: 1.75rem;
+    }
+    h1 {
+      font-family: 'Libre Baskerville', Georgia, serif;
+      font-size: 2rem;
+      font-weight: 400;
+      letter-spacing: -0.02em;
+      color: var(--text);
+      margin-bottom: 0;
+      cursor: pointer;
+      display: inline-block;
+      transition: color 0.12s;
+    }
+    h1:hover { color: var(--amber-text); }
+    .controls {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 1.25rem;
+      flex-wrap: wrap;
+    }
+    .search-wrap {
+      position: relative;
+      flex: 1;
+      min-width: 180px;
+    }
+    #search {
+      width: 100%;
+      background: var(--surface);
+      border: 1px solid var(--divider);
+      color: var(--text);
+      font-family: inherit;
+      font-size: 0.78rem;
+      padding: 0.5rem 0.75rem 0.5rem 2rem;
+      border-radius: 3px;
+      outline: none;
+      transition: border-color 0.15s;
+    }
+    #search:focus { border-color: var(--muted); }
+    #search::placeholder { color: var(--muted); }
+    .search-icon {
+      position: absolute;
+      left: 0.65rem;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--muted);
+      font-size: 1rem;
+      pointer-events: none;
+      line-height: 1;
+    }
+    .toggle-group {
+      display: flex;
+      border: 1px solid var(--divider);
+      border-radius: 3px;
+      overflow: hidden;
+    }
+    .toggle-btn {
+      background: transparent;
+      border: none;
+      border-right: 1px solid var(--divider);
+      color: var(--muted);
+      font-family: inherit;
+      font-size: 0.62rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 0.5rem 0.9rem;
+      cursor: pointer;
+      transition: background 0.1s, color 0.1s;
+    }
+    .toggle-btn:last-child { border-right: none; }
+    .toggle-btn:hover { background: var(--surface); color: var(--text); }
+    .toggle-btn.active { background: var(--surface2); color: var(--text); }
+    .toggle-btn.active-attended { color: var(--amber-text); background: var(--amber-bg); }
+    .toggle-btn.active-listened { color: var(--blue-text); background: var(--blue-bg); }
+
+    /* active artist filter pill */
+    #artist-bar {
+      display: none;
+      align-items: center;
+      gap: 0.5rem;
+      margin-top: -0.4rem;
+      margin-bottom: 1rem;
+    }
+    #artist-bar.visible { display: flex; }
+    .artist-pill {
+      font-size: 0.65rem;
+      letter-spacing: 0.08em;
+      color: var(--amber-text);
+      background: var(--amber-bg);
+      border: 1px solid var(--amber-border);
+      border-radius: 3px;
+      padding: 2px 8px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .artist-pill button {
+      background: none;
+      border: none;
+      color: var(--amber-text);
+      cursor: pointer;
+      font-size: 0.8rem;
+      line-height: 1;
+      padding: 0;
+      opacity: 0.7;
+      font-family: inherit;
+    }
+    .artist-pill button:hover { opacity: 1; }
+    .artist-bar-label {
+      font-size: 0.62rem;
+      color: var(--muted);
+      letter-spacing: 0.08em;
+    }
+
+    .col-headers {
+      display: grid;
+      grid-template-columns: 110px 1fr 1fr 90px 18px;
+      gap: 0 1.5rem;
+      padding: 0 0.6rem 0.6rem;
+      border-bottom: 1px solid var(--divider);
+    }
+    .col-headers button {
+      background: none;
+      border: none;
+      color: var(--muted);
+      font-family: inherit;
+      font-size: 0.62rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      cursor: pointer;
+      padding: 0;
+      text-align: left;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      transition: color 0.1s;
+    }
+    .col-headers button:hover { color: var(--text); }
+    .col-headers button.sorted { color: var(--text); }
+    .sort-ind { font-size: 0.6rem; }
+    #show-list { margin-top: 0.15rem; }
+    .show-item { border-bottom: 1px solid var(--divider); }
+    .show-row {
+      display: grid;
+      grid-template-columns: 110px 1fr 1fr 90px 18px;
+      gap: 0 1.5rem;
+      padding: 0.8rem 0.6rem;
+      align-items: baseline;
+      cursor: pointer;
+      transition: background 0.1s ease;
+      user-select: none;
+    }
+    .show-row:hover { background: var(--surface); }
+    .show-item.open .show-row { background: var(--surface); }
+    .date {
+      font-size: 0.75rem;
+      color: var(--muted);
+      font-weight: 300;
+      white-space: nowrap;
+    }
+    .artist {
+      font-size: 0.88rem;
+      color: var(--text);
+      font-weight: 400;
+    }
+    .artist-name {
+      cursor: pointer;
+      transition: color 0.12s;
+      text-decoration-line: underline;
+      text-decoration-style: dotted;
+      text-decoration-color: transparent;
+      text-underline-offset: 3px;
+    }
+    .artist-name:hover {
+      color: var(--amber-text);
+      text-decoration-color: var(--amber-border);
+    }
+    .artist-name.active { color: var(--amber-text); }
+    .heart {
+      font-size: 0.65rem;
+      color: var(--text);
+      margin-left: 0.35rem;
+    }
+    .expand-venue {
+      font-size: 0.72rem;
+      color: var(--muted);
+      font-weight: 400;
+      margin-bottom: 1.1rem;
+      letter-spacing: 0.02em;
+    }
+    .venue { font-size: 0.75rem; color: var(--muted); font-weight: 300; }
+    .tag {
+      font-size: 0.6rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 3px 8px;
+      border-radius: 3px;
+      display: inline-block;
+    }
+    .tag-attended { background: var(--amber-bg); color: var(--amber-text); border: 1px solid var(--amber-border); }
+    .tag-listened { background: var(--blue-bg); color: var(--blue-text); border: 1px solid var(--blue-border); }
+    .chevron {
+      font-size: 0.65rem;
+      color: var(--muted);
+      transition: transform 0.22s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .show-item.open .chevron { transform: rotate(180deg); }
+    .expand-panel {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.28s ease;
+      background: var(--surface);
+    }
+    .show-item.open .expand-panel { max-height: 1500px; }
+    .expand-inner {
+      padding: 1.25rem 0.6rem 1.4rem;
+      border-top: 1px solid var(--divider);
+      display: grid;
+      grid-template-columns: 1fr 260px;
+      gap: 0 1.5rem;
+    }
+    .setlist-block .set-section:last-child { margin-bottom: 0; }
+    .set-section { margin-bottom: 0.9rem; }
+    .set-label {
+      font-size: 0.6rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--muted);
+      display: block;
+      margin-bottom: 0.3rem;
+    }
+    .set-songs {
+      font-size: 0.78rem;
+      color: var(--text);
+      font-weight: 400;
+      line-height: 1.85;
+    }
+    /* song formatting */
+    .set-songs em { font-style: italic; font-weight: 600; }   /* ** = bold-italic */
+    .set-songs strong { font-style: normal; font-weight: 500; color: var(--text); }  /* * = bold */
+    .set-songs i { font-style: italic; font-weight: 400; }     /* _ = italic only */
+    .set-songs .hl {
+      color: var(--hl-text);
+      font-style: normal;
+    }
+    .set-songs .hl em,
+    .set-songs .hl strong,
+    .set-songs .hl i { font-style: normal; }
+
+    .notes-block {
+      border-left: 1px solid var(--divider);
+      padding-left: 1.25rem;
+    }
+    .notes-block.empty { border-left: none; padding-left: 0; }
+    /* shared small caps label */
+    .notes-label, .review-label {
+      font-size: 0.6rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--muted);
+      display: block;
+      margin-bottom: 0.4rem;
+    }
+    /* notes: under the setlist, italic by default */
+    .notes-inline {
+      margin-top: 1.25rem;
+      padding-top: 1.1rem;
+      border-top: 1px solid var(--divider);
+    }
+    .notes-text {
+      font-size: 0.84rem;
+      color: var(--text);
+      font-weight: 400;
+      line-height: 1.7;
+      font-style: italic;
+      font-family: 'IBM Plex Mono', 'Courier New', monospace;
+    }
+    /* review: sidebar, upright */
+    .review-inline { margin-bottom: 1rem; }
+    .review-text {
+      font-size: 0.84rem;
+      color: var(--text);
+      font-weight: 400;
+      line-height: 1.7;
+      font-style: normal;
+      font-family: 'IBM Plex Mono', 'Courier New', monospace;
+    }
+    /* emphasis inside notes + review (markers always win over the default) */
+    .notes-text em, .review-text em { font-style: italic; font-weight: 600; }
+    .notes-text strong, .review-text strong { font-style: normal; font-weight: 500; }
+    .notes-text i, .review-text i { font-style: italic; font-weight: 400; }
+    .notes-text .hl, .review-text .hl { color: var(--hl-text); font-style: normal; }
+    .notes-text .hl em, .notes-text .hl strong, .notes-text .hl i,
+    .review-text .hl em, .review-text .hl strong, .review-text .hl i { font-style: normal; }
+    .source-inline {
+      font-size: 0.68rem;
+      color: var(--muted);
+      margin-top: 1rem;
+      font-style: normal;
+      font-family: 'IBM Plex Mono', monospace;
+      line-height: 1.6;
+    }
+    .rating-block {
+      margin-top: 1rem;
+    }
+    .listened-block {
+      margin-top: 0.7rem;
+    }
+    .listened-label {
+      font-size: 0.6rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--muted);
+      display: block;
+      margin-bottom: 0.25rem;
+    }
+    .listened-dates {
+      font-size: 0.72rem;
+      color: var(--text);
+      font-weight: 300;
+      font-family: 'IBM Plex Mono', monospace;
+    }
+    .listened-dates .ld-sep { color: var(--muted); }
+    .listened-dates .ld-date {
+      cursor: pointer;
+      transition: color 0.12s;
+      text-decoration-line: underline;
+      text-decoration-style: dotted;
+      text-decoration-color: transparent;
+      text-underline-offset: 3px;
+    }
+    .listened-dates .ld-date:hover {
+      color: var(--amber-text);
+      text-decoration-color: var(--amber-border);
+    }
+    .listened-dates .ld-date.active {
+      color: var(--amber-text);
+      text-decoration-color: var(--amber-border);
+    }
+    .rating-value {
+      font-family: 'Inter', -apple-system, sans-serif;
+      font-size: 1.6rem;
+      font-weight: 700;
+      color: #ffffff;
+      letter-spacing: -0.01em;
+    }
+    .rating-value .denom {
+      font-size: 0.72rem;
+      font-weight: 400;
+      color: var(--muted);
+    }
+    .no-results {
+      padding: 2rem 0.6rem;
+      font-size: 0.78rem;
+      color: var(--muted);
+    }
+    footer {
+      margin-top: 3rem;
+      font-size: 0.62rem;
+      color: var(--muted);
+      letter-spacing: 0.08em;
+      line-height: 2;
+    }
+    @media (max-width: 620px) {
+      body { padding: 3rem 1.25rem 3rem; }
+      .col-headers, .show-row { grid-template-columns: 90px 1fr 80px 18px; }
+      .col-headers .venue-hdr, .show-row .venue { display: none; }
+      .expand-inner { grid-template-columns: 1fr; }
+      .notes-block { border-left: none; padding-left: 0; border-top: 1px solid var(--divider); padding-top: 1rem; margin-top: 0.75rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1 id="reset-title" title="reset all filters">show log</h1>
+  </header>
+
+  <div class="controls">
+    <div class="search-wrap">
+      <span class="search-icon">⌕</span>
+      <input id="search" type="text" placeholder="search artist, venue, city…" autocomplete="off">
+    </div>
+    <div class="toggle-group">
+      <button class="toggle-btn active" data-filter="all">All</button>
+      <button class="toggle-btn" data-filter="attended">Attended</button>
+      <button class="toggle-btn" data-filter="listened">Listened</button>
+    </div>
+  </div>
+
+  <div id="artist-bar">
+    <span class="artist-bar-label">artist:</span>
+    <span class="artist-pill">
+      <span id="artist-pill-name"></span>
+      <button onclick="clearArtistFilter()" title="clear">×</button>
+    </span>
+  </div>
+
+  <div class="col-headers">
+    <button data-col="date" class="sorted">date <span class="sort-ind">↓</span></button>
+    <button data-col="artist">artist <span class="sort-ind"></span></button>
+    <button data-col="venue" class="venue-hdr">venue <span class="sort-ind"></span></button>
+    <button data-col="type">type <span class="sort-ind"></span></button>
+    <span></span>
+  </div>
+
+  <div id="show-list"></div>
+
+  <script>
+                    /* SHOWS_START */
+    const shows = [
+      {
+        "date": "2026-05-16",
+        "artist": "Future Islands",
+        "venue": "Greenfield Lake Amphitheater",
+        "city": "Wilmington, NC",
+        "type": "attended",
+        "fav": true,
+        "rating": 9,
+        "sets": [
+          {
+            "label": "Set",
+            "songs": "The Ink Well, King of Sweden, The Tower, A Dream of You and Me, Find Love, Walking Through That Door, Before the Bridge, The Thief, One Day, Plastic Beach, Peach, Pinocchio, Give Me the Ghost Back, The Sickness, As Long As You Are, Glimpse, For Sure, Seasons (Waiting on You), Long Flight, Tin Man"
+          },
+          {
+            "label": "Encore",
+            "songs": "Inch of Dust, Vireo's Eye > Beach Foam, Little Dreamer"
+          }
+        ],
+        "notes": "This was the second show of the Fountain of Youth 20th Anniversary Tour and the second and final night of a two night run at Greenfield Lake. Valient Thorr was the opening act. This show featured the live debut of **Find Love**, the first **Ink Well** since 11/10/10 (Ottobar, Baltimore, MD), and the first **Pinocchio** since 7/26/15 (Carrboro Town Commons, Carrboro, NC).",
+        "review": "",
+        "source": "",
+        "listened": []
+      },
+      {
+        "date": "2026-05-16",
+        "artist": "Valient Thorr",
+        "venue": "Greenfield Lake Amphitheater",
+        "city": "Wilmington, NC",
+        "type": "attended",
+        "fav": true,
+        "rating": 8.7,
+        "sets": [
+          {
+            "label": "Set",
+            "songs": "**This setlist is currently unknown.**"
+          }
+        ],
+        "notes": "This was an opening set for **Future Islands** and served as a celebration of the band's 24th anniversary.",
+        "review": "Just so fucking kick ass. These guys did not hold back a bit. I don't think the Future Islands crowd (well, the Wilmington crowd) was ready for this shit at all. Absolutely raging material and some of the most genuine, gracious people I've had the pleasure of meeting. Still in shock over how nice they are.",
+        "source": "",
+        "listened": []
+      },
+      {
+        "date": "2026-05-15",
+        "artist": "Future Islands",
+        "venue": "Greenfield Lake Amphitheater",
+        "city": "Wilmington, NC",
+        "type": "attended",
+        "fav": true,
+        "rating": 9.2,
+        "sets": [
+          {
+            "label": "Set I",
+            "songs": "*The Fountain, King of Sweden, The Tower, A Dream of You and Me, Cotton Flower, Walking Through That Door, Light House, One Day, Corner of My Eye, Plastic Beach, Peach, Six Weeks, Give Me the Ghost Back, For Sure, Glimpse, As Long as You Are, Seasons (Waiting on You), Long Flight, Tin Man*"
+          },
+          {
+            "label": "Encore",
+            "songs": "A Song for Our Grandfathers, Vireo's Eye, Little Dreamer"
+          }
+        ],
+        "notes": "This was the first show of the Fountain of Youth 20th Anniversary Tour and the first night of a two night run at Greenfield Lake. Lonnie Walker was the opening act. This show featured the live debuts of **Six Weeks** and **As Long as You Are**, along with the first **Fountain** since 9/23/15 (The Observatory, San Diego, CA), the first **Cotton Flower** since 11/19/12 (Beachland Ballroom, Cleveland, OH), and the first **One Day** since 9/16/18 (The Observatory, Santa Ana, CA).",
+        "review": "",
+        "source": "",
+        "listened": []
+      },
+      {
+        "date": "2026-05-15",
+        "artist": "Lonnie Walker",
+        "venue": "Greenfield Lake Amphitheater",
+        "city": "Wilmington, NC",
+        "type": "attended",
+        "rating": 8,
+        "sets": [
+          {
+            "label": "Set",
+            "songs": "**This setlist is currently unknown.**"
+          }
+        ],
+        "notes": "This was an opening set for **Future Islands**.",
+        "review": "My first time seeing these guys after years of hearing about them and not having our schedules line up. Really short set that might've just barely hit the 30 minute mark, but awesome energy throughout. Lotta chomping, unfortunately. Gotta see them again!",
+        "source": "",
+        "listened": [],
+        "fav": false
+      },
+      {
+        "date": "2026-04-14",
+        "artist": "Billy Strings",
+        "venue": "First Horizon Coliseum",
+        "city": "Greensboro, NC",
+        "type": "attended",
+        "rating": 6.2,
+        "sets": [
+          {
+            "label": "Set I",
+            "songs": "Long Forgotten Dream >The Cuckoo, The Train That Carried My Girl From Town > Black Mountain Rag, Pyramid Country > Must Be Seven > 15 Steps, In The Morning Light, Little Sadie, Highway Hypnosis"
+          },
+          {
+            "label": "Set II",
+            "songs": "Turmoil & Tinfoil, Seney Stretch, Miss The Mississippi And You, The Fire On My Tongue > Ridin’ That Midnight Train, Fire Line, Running The Route, Blue Ridge Mountain Blues, In the Clear, Nutshell > Wargasm, Hold That Woodpile Down"
+          }
+        ],
+        "notes": "This was the seventh show of the 2026 Spring Tour and the band's first appearance in Greensboro since 12/6/23. This show featured the first **Blue Ridge Mountain Blues** since 10/4/24.",
+        "review": "Left at set break. Every time I see them I enjoy the experience less and less. Just not a crowd I want to be part of.",
+        "source": "",
+        "listened": [],
+        "fav": false
+      },
+      {
+        "date": "2026-04-03",
+        "artist": "Santana",
+        "venue": "Durham Performing Arts Center",
+        "city": "Durham, NC",
+        "type": "attended",
+        "rating": "",
+        "sets": [
+          {
+            "label": "Set",
+            "songs": "Soul Sacrifice, Jingo, Evil Ways, Black Magic Woman -> Gypsy Queen -> Oye cómo va, Maria Maria, Foo Foo, Everybody's Everything, Bass and Guitar -> Drums and Bass > Hope You're Feeling Better, Europa (Earth's Cry, Heaven's Smile), She's Not There, Hold On, The Game of Love, (Da le) Yaleo, Put Your Lights On, Corazón Espinado"
+          },
+          {
+            "label": "Encore",
+            "songs": "Toussaint L'Ouverture > Drum Solo > Smooth"
+          }
+        ],
+        "notes": "This was the fifth show of the Oneness Tour and Santana's first appearance in Durham since 3/18/77 (Cameron Indoor Stadium, Duke Univ.). **Toussaint L'Ouverture** contained While My Guitar Gently Weeps (The Beatles) teases.",
+        "review": "",
+        "source": "",
+        "listened": [],
+        "fav": false
+      },
+      {
+        "date": "2026-03-19",
+        "artist": "Mike Gordon",
+        "venue": "Neighborhood Theatre",
+        "city": "Charlotte, NC",
+        "type": "attended",
+        "rating": "",
+        "sets": [
+          {
+            "label": "Set I",
+            "songs": "Connected, Meat, Call Me the Breeze, Soulfood Man, Convince Me, Universe is Calling, Guilty Pleasures"
+          },
+          {
+            "label": "Set II",
+            "songs": "You Really Got Me, Mull, Spanish Moon, Tilting, Louisiana Lady, Steps"
+          },
+          {
+            "label": "Encore",
+            "songs": "Sweet Emotion"
+          }
+        ],
+        "notes": "This was the fifth show of the March 2026 Tour and the band's first appearance at the Neighborhood Theatre since 9/23/17.",
+        "review": "Wasn't totally sure what to expect, wasn't totally convinced, but still had a good time. Met Mike preshow!",
+        "source": "",
+        "listened": [],
+        "fav": false
+      },
+      {
+        "date": "2026-03-03",
+        "artist": "Spafford",
+        "venue": "Ziggy's",
+        "city": "Greensboro, NC",
+        "type": "attended",
+        "fav": true,
+        "rating": 8.1,
+        "sets": [
+          {
+            "label": "Set I",
+            "songs": "==Dream Jam== -> Night After Night, A Union Divine, ==In the Eyes of Thieves==, Shu Ba Da Du Ma Ma Ma Ma"
+          },
+          {
+            "label": "Set II",
+            "songs": "==Gold Glittered Hat -> Comfortable -> Darkness Singularity=="
+          }
+        ],
+        "notes": "This was the first show of the 2026 Spring Tour and the band's first appearance in Greensboro since 2/3/20 (Blind Tiger), ending a **460 show gap**. This was the first show to feature Nick's Behringer RD-9 Analog Drum Machine. **In the Eyes of Thieves** contained a Guadalajara (Pepe Guízar) tease from Cory. **Gold Glittered Hat** contained a **Comfortable** tease from Cory and Shon. **Comfortable** contained a Dayzed Inn Daydreams (Ariel Pink) and a Love Shack (The B-52's) tease from Shon. **Darkness Singularity** contained numerous **Plush** teases from Nick.",
+        "review": "",
+        "source": "",
+        "listened": []
+      },
+      {
+        "date": "2026-01-17",
+        "artist": "Hiss Golden Messenger",
+        "venue": "Steven Tanger Center for the Performing Arts",
+        "city": "Greensboro, NC",
+        "type": "attended",
+        "fav": true,
+        "rating": 8.6,
+        "sets": [
+          {
+            "label": "Set I",
+            "songs": "My Wing, Passing Clouds, Biloxi, Caledonia, My Love, Blue Country Mystic, Sanctuary, Standing in the Doorway"
+          },
+          {
+            "label": "Set II",
+            "songs": "Cat's Eye Blue, Heart Like a Levee, Bright Direction (You're a Dark Star Now), Glory Strums (Loneliness of the Long-Distance Runner), As the Crow Flies, Highland Grace, I Need a Teacher"
+          }
+        ],
+        "notes": "This was a standalone show with the Greensboro Symphony. Prior to **Bright Direction**, M.C. announced the band's 16th studio album **I'm People**, which was released on 5/1/26 by Chrysalis.",
+        "review": "",
+        "source": "",
+        "listened": []
+      },
+      {
+        "date": "2025-12-22",
+        "artist": "Sam Fribush Organ Trio",
+        "venue": "Flat Iron",
+        "city": "Greensboro, NC",
+        "type": "attended",
+        "rating": 7,
+        "sets": [
+          {
+            "label": "Set",
+            "songs": "People Please, Chester > Rolex > ?, ?, ?, Poison"
+          }
+        ],
+        "notes": "",
+        "review": "Lots of chompers. Old school Flat Iron vibe where there's way too many people and it's way too hot. I remember it being one set and surprised at how quickly it was over.",
+        "source": "",
+        "listened": [],
+        "fav": false
+      },
+      {
+        "date": "2025-12-02",
+        "artist": "Dua Lipa",
+        "venue": "Estadio GNP Seguros",
+        "city": "Mexico City, MX",
+        "type": "listened",
+        "fav": true,
+        "rating": "",
+        "sets": [
+          {
+            "label": "Act I",
+            "songs": "Training Season, End of an Era, Break My Heart, One Kiss"
+          },
+          {
+            "label": "Act II",
+            "songs": "Watcha Doing, Levitating, These Walls, Oye Mi Amor, Maria"
+          },
+          {
+            "label": "Act III",
+            "songs": "Physical, Electricity, Hallucinate, Illusion"
+          },
+          {
+            "label": "Act IV",
+            "songs": "Falling Forever, Happy for You, Love Again, Anything for Love, Be the One"
+          },
+          {
+            "label": "Encore",
+            "songs": "New Rules > Dance the Night (Interlude) > Don't Start Now > Houdini"
+          }
+        ],
+        "notes": "This was the 91st show of the Radical Optimism Tour and the second night of a three night run in Mexico City. **Oye Mi Amor** featured Fher Olvera (Maná) on guitar and lead vocals. This show was recorded and released as **Live from Mexico** on 5/22/26 by Warner.",
+        "review": "",
+        "source": "",
+        "listened": [
+          {
+            "date": "5/22/26"
+          }
+        ]
+      },
+      {
+        "date": "2025-05-31",
+        "artist": "Sam Fribush Organ Trio",
+        "venue": "Flat Iron",
+        "city": "Greensboro, NC",
+        "type": "attended",
+        "rating": 8,
+        "sets": [
+          {
+            "label": "Set I",
+            "songs": "Rolex, Good Morning, Uncle T, Watch This, Midnight Rider"
+          },
+          {
+            "label": "Set II",
+            "songs": "Compassion, DTF, Chester, Shama, Poison"
+          },
+          {
+            "label": "Set III",
+            "songs": "Wait Up, Message in a Bottle, Fly Like an eagle, Shake Everything You Got, Fire on the Mountain, I Must Be in a Good Place Now, Iko Iko"
+          }
+        ],
+        "notes": "This was originally scheduled to be a two-set show, but had a third set added before **Poison** (which was 19(!) minutes long). **Shake Everything You Got** featured Sincere Hatten on saxophone.  **I Must Be in a Good Place Now** and **Iko Iko** featured Ric Robertson on lead vocals.",
+        "review": "Lots of bigger jams here, with nearly everything touching the 10 minute mark and the second set stealing the show. A solid 25 minutes of **DTF** + **Chester**, and then a 19(!) minute **Posion** to close!",
+        "source": "AKG 483(DIN/FOB) + AKG 481 (ORTF/FOB)>F6 (32bit/48KHz) by Joel at jamlive.org",
+        "listened": [],
+        "fav": false
+      },
+      {
+        "date": "1994-06-10",
+        "artist": "Phish",
+        "venue": "Red Rocks Amphitheatre",
+        "city": "Morrison, CO",
+        "type": "listened",
+        "fav": false,
+        "rating": "",
+        "sets": [
+          {
+            "label": "Set I",
+            "songs": "Runaway Jim, Foam, Sample in a Jar, Nellie Kane > Demand > David Bowie, The Lizards, Cavern, Julius"
+          },
+          {
+            "label": "Set II",
+            "songs": "Axilla (Part II) > The Curtain > Tweezer > Lifeboy > Sparkle > Possum, Hold Your Head Up > I Wan'na Be Like You > Hold Your Head Up, Harry Hood, Tweezer Reprise"
+          },
+          {
+            "label": "Encore",
+            "songs": "Sleeping Monkey > Rocky Top"
+          }
+        ],
+        "notes": "This was the second show of the 1994 Summer Tour and the first show of the band's first two-night run at Red Rocks. Tickets cost $20.50. **Bowie** contained a **Leprechaun** tease from Trey. During **Lizards**, Trey talked about the rocks that looked like a giant lizard and referenced the previous time they played at Red Rocks (8/20/93). **Lizards** also contained a Fanfare for the Common Man (Aaron Capland) tease from Page. **Cavern** contained Purple Haze and Voodoo Child (Jimi Hendrix) teases from Trey. **Tweezer** contained What a Man (Linda Lydell) quotes and teases from Trey. **Possum** contained a ==Random Note== signal.",
+        "review": "",
+        "source": "Neumann TLM-170i's (Set I: subcardoid, Set IIe: cardoid) > Oade > (Oade) Panasonic SV-250 > Sony TCD-D3 > DAT(m)DAT(m) > Sony PCM-R500 > SPDIF > Tascam HD-P2 > CDWave > FLACl by Doug OadePatch DAT(m) provided by Bill ShawTransfer by Terry Watts",
+        "listened": [
+          {
+            "date": "5/24/26"
+          }
+        ]
+      },
+      {
+        "date": "1994-06-09",
+        "artist": "Phish",
+        "venue": "Triad Amphitheater",
+        "city": "Salt Lake City, UT",
+        "type": "listened",
+        "fav": true,
+        "rating": 8,
+        "sets": [
+          {
+            "label": "Set I",
+            "songs": "Llama, Guelah Papyrus, Rift, Down with Disease > It's Ice > If I Could > Maze, Fee, Suzy Greenberg"
+          },
+          {
+            "label": "Set II",
+            "songs": "Split Open and Melt, Glide > Julius, Halley's Comet -> Scent of a Mule, Ginseng Sullivan, Mike's Song > I Am Hydrogen > Weekapaug Groove, Golgi Apparatus"
+          },
+          {
+            "label": "Encore",
+            "songs": "Highway to Hell"
+          }
+        ],
+        "notes": "This was the first show of the 1994 Summer Tour and the band's first and only appearance at the Triad Amphitheater. Advance tickets cost $17.50. **Disease** featured Fish encouraging fans to \"write it down.\" **Fee** featured Trey singing the verses through a megaphone. **Ginseng Sullivan** was performed acoustic and without microphones, with Page on Melodica, Mike on upright bass, and Fish on Madonna washboard.",
+        "review": "",
+        "source": "B+K 4011 > ? > DA-P1CDR > EAC > CDWav > Soundforge 4.5 > shntool > SHN (Set 2 only: SBD > Cass/xDennon DRW-840 > Sony R500 > Audiophile 2496 > Samplitude 5.5 @44.1 > FLAC > Wavelab > FLAC16)",
+        "listened": [
+          {
+            "date": "5/23/26"
+          }
+        ]
+      }
+    ];
+    /* SHOWS_END */
+
+    let sortCol = 'date', sortDir = 'desc', filterType = 'all', searchQuery = '', openIdx = null, artistFilter = null;
+    let selectedListen = {};  // origIdx → listened array index
+
+    function selectListen(origIdx, li, e) {
+      e.stopPropagation();
+      selectedListen[origIdx] = selectedListen[origIdx] === li ? undefined : li;
+      render();
+    }
+
+    function getDisplayData() {
+      let r = shows.map((s, i) => ({...s, origIdx: i}));
+      if (filterType !== 'all') r = r.filter(s => s.type === filterType);
+      if (artistFilter) r = r.filter(s => s.artist === artistFilter);
+      if (searchQuery) {
+        const q = searchQuery.toLowerCase();
+        r = r.filter(s => s.artist.toLowerCase().includes(q) || s.venue.toLowerCase().includes(q) || s.city.toLowerCase().includes(q));
+      }
+      r.sort((a, b) => {
+        let av = sortCol === 'venue' ? a.venue + a.city : a[sortCol];
+        let bv = sortCol === 'venue' ? b.venue + b.city : b[sortCol];
+        const cmp = av < bv ? -1 : av > bv ? 1 : 0;
+        return sortDir === 'asc' ? cmp : -cmp;
+      });
+      return r;
+    }
+
+    function fmtDate(d) {
+      const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(d || '');
+      return m ? `${m[2]}-${m[3]}-${m[1]}` : d;
+    }
+
+    function fmtRating(r) {
+      const n = Number(r);
+      return n === 10 ? '10' : n.toFixed(1);
+    }
+
+    function fmt(str) {
+      // escape HTML first so > and -> render literally, exactly as typed,
+      // in the same font and color as the rest of the setlist text
+      return str
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        // then apply song-emphasis markup (** before * matters)
+        .replace(/\*\*(.*?)\*\*/g, '<em>$1</em>')
+        .replace(/\*(.*?)\*/g, '<strong>$1</strong>')
+        .replace(/_(.*?)_/g, '<i>$1</i>')
+        .replace(/==(.*?)==/g, '<span class="hl">$1</span>');
+    }
+
+    function filterArtist(name, e) {
+      e.stopPropagation();
+      if (artistFilter === name) {
+        artistFilter = null;
+      } else {
+        artistFilter = name;
+      }
+      updateArtistBar();
+      render();
+    }
+
+    function clearArtistFilter() {
+      artistFilter = null;
+      updateArtistBar();
+      render();
+    }
+
+    function updateArtistBar() {
+      const bar = document.getElementById('artist-bar');
+      const pill = document.getElementById('artist-pill-name');
+      if (artistFilter) {
+        bar.classList.add('visible');
+        pill.textContent = artistFilter;
+      } else {
+        bar.classList.remove('visible');
+      }
+    }
+
+    function render() {
+      const list = document.getElementById('show-list');
+      const data = getDisplayData();
+      if (!data.length) { list.innerHTML = '<div class="no-results">no shows match.</div>'; return; }
+      list.innerHTML = data.map(s => {
+        const isOpen = openIdx === s.origIdx;
+        const setsHtml = s.sets.map(set =>
+          `<div class="set-section"><span class="set-label">${set.label}</span><span class="set-songs">${fmt(set.songs)}</span></div>`
+        ).join('');
+        const ratingHtml = (s.rating !== undefined && s.rating !== null && s.rating !== '')
+          ? `<div class="rating-block"><span class="rating-value">${fmtRating(s.rating)}</span></div>`
+          : '';
+        const ld = Array.isArray(s.listened) ? s.listened.filter(l => l && (typeof l === 'string' ? l : l.date)) : [];
+        const ldNorm = ld.map(l => typeof l === 'string' ? {date:l} : l);
+
+        const notesHtml = s.notes
+          ? `<div class="notes-inline"><span class="notes-label">notes</span><span class="notes-text">${fmt(s.notes)}</span></div>`
+          : '';
+
+        // source moves under setlist
+        const srcHtml = s.source ? `<div class="source-inline">${s.source.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>')}</div>` : '';
+
+        // active listened date for this show
+        const selLd = selectedListen[s.origIdx];
+        const ldReview = selLd !== undefined && ldNorm[selLd] && ldNorm[selLd].review;
+        const activeReview = ldReview ? ldNorm[selLd].review : (s.review || '');
+        const reviewHtml = activeReview
+          ? `<div class="review-inline" id="review-${s.origIdx}"><span class="review-label">review${ldReview ? ' · '+ldNorm[selLd].date : ''}</span><span class="review-text">${fmt(activeReview)}</span></div>`
+          : '';
+
+        const listenedHtml = ldNorm.length
+          ? `<div class="listened-block"><span class="listened-label">date listened</span><span class="listened-dates">${ldNorm.map((l,li)=>{
+              const cls = selLd === li ? 'ld-date active' : 'ld-date';
+              return `<span class="${cls}" onclick="selectListen(${s.origIdx},${li},event)">${l.date}</span>`;
+            }).join('<span class="ld-sep"> · </span>')}</span></div>`
+          : '';
+
+        const venueHeader = (s.venue || s.city) ? `<div class="expand-venue">${s.venue}${s.city ? ' · '+s.city : ''}</div>` : '';
+        return `<div class="show-item${isOpen?' open':''}" data-orig="${s.origIdx}">
+          <div class="show-row" onclick="toggle(${s.origIdx})">
+            <span class="date">${fmtDate(s.date)}${s.fav ? '<span class="heart">♡</span>' : ''}</span>
+            <span class="artist"><span class="artist-name${artistFilter === s.artist ? ' active' : ''}" onclick="filterArtist('${s.artist.replace(/'/g,"\\'")}', event)">${s.artist}</span></span>
+            <span class="venue">${s.venue} · ${s.city}</span>
+            <span class="tag tag-${s.type}">${s.type}</span>
+            <span class="chevron">▾</span>
+          </div>
+          <div class="expand-panel">
+            <div class="expand-inner">
+              <div class="setlist-block">
+                ${venueHeader}
+                ${setsHtml}
+                ${notesHtml}
+                ${srcHtml}
+              </div>
+              <div class="notes-block${(reviewHtml||ratingHtml||listenedHtml)?'':' empty'}">
+                ${reviewHtml}
+                ${ratingHtml}
+                ${listenedHtml}
+              </div>
+            </div>
+          </div>
+        </div>`;
+      }).join('');
+    }
+
+    function toggle(i) { openIdx = openIdx === i ? null : i; render(); }
+
+    function updateSortHeaders() {
+      document.querySelectorAll('.col-headers button').forEach(btn => {
+        const col = btn.dataset.col;
+        const ind = btn.querySelector('.sort-ind');
+        if (col === sortCol) { btn.classList.add('sorted'); ind.textContent = sortDir === 'asc' ? '↑' : '↓'; }
+        else { btn.classList.remove('sorted'); ind.textContent = ''; }
+      });
+    }
+
+    document.querySelectorAll('.col-headers button').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const col = btn.dataset.col;
+        if (sortCol === col) sortDir = sortDir === 'asc' ? 'desc' : 'asc';
+        else { sortCol = col; sortDir = col === 'date' ? 'desc' : 'asc'; }
+        updateSortHeaders(); render();
+      });
+    });
+
+    document.querySelectorAll('.toggle-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        filterType = btn.dataset.filter;
+        document.querySelectorAll('.toggle-btn').forEach(b => b.classList.remove('active','active-attended','active-listened'));
+        if (filterType === 'all') btn.classList.add('active');
+        else if (filterType === 'attended') btn.classList.add('active-attended');
+        else btn.classList.add('active-listened');
+        render();
+      });
+    });
+
+    document.getElementById('search').addEventListener('input', e => { searchQuery = e.target.value; render(); });
+
+    function resetAll() {
+      sortCol = 'date'; sortDir = 'desc';
+      filterType = 'all';
+      searchQuery = '';
+      artistFilter = null;
+      openIdx = null;
+      document.getElementById('search').value = '';
+      document.querySelectorAll('.toggle-btn').forEach(b => b.classList.remove('active','active-attended','active-listened'));
+      document.querySelector('.toggle-btn[data-filter="all"]').classList.add('active');
+      updateSortHeaders();
+      updateArtistBar();
+      render();
+    }
+    document.getElementById('reset-title').addEventListener('click', resetAll);
+
+    render();
+  </script>
+</body>
+</html>
