@@ -207,6 +207,9 @@
       color: var(--muted);
       font-weight: 300;
       white-space: nowrap;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
     }
     .artist {
       font-size: 0.88rem;
@@ -227,9 +230,9 @@
     }
     .artist-name.active { color: var(--amber-text); }
     .heart {
-      font-size: 0.65rem;
-      color: var(--text);
-      margin-left: 0.35rem;
+      font-size: 1.1rem;
+      color: #c55a7a;
+      line-height: 1;
     }
     .expand-venue {
       font-size: 0.72rem;
@@ -855,6 +858,15 @@
       return m ? `${m[2]}-${m[3]}-${m[1]}` : d;
     }
 
+    function fmtDateFull(d) {
+      const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(d || '');
+      if (!m) return d;
+      const dt = new Date(+m[1], +m[2]-1, +m[3]);
+      const days = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+      const months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+      return `${days[dt.getDay()]}, ${months[dt.getMonth()]} ${+m[3]} ${m[1]}`;
+    }
+
     function fmtRating(r) {
       const n = Number(r);
       return n === 10 ? '10' : n.toFixed(1);
@@ -939,12 +951,12 @@
             }).join('<span class="ld-sep"> · </span>')}</span></div>`
           : '';
 
-        const venueHeader = (s.venue || s.city) ? `<div class="expand-venue">${s.venue}${s.city ? ' · '+s.city : ''}</div>` : '';
+        const venueHeader = `<div class="expand-venue">${s.artist}<br>${fmtDateFull(s.date)}${s.venue ? '<br>'+s.venue : ''}${s.city ? '<br>'+s.city : ''}</div>`;
         return `<div class="show-item${isOpen?' open':''}" data-orig="${s.origIdx}">
           <div class="show-row" onclick="toggle(${s.origIdx})">
-            <span class="date">${fmtDate(s.date)}${s.fav ? '<span class="heart">♡</span>' : ''}</span>
+            <span class="date">${fmtDate(s.date)}${s.fav ? '<span class="heart">♥</span>' : ''}</span>
             <span class="artist"><span class="artist-name${artistFilter === s.artist ? ' active' : ''}" onclick="filterArtist('${s.artist.replace(/'/g,"\\'")}', event)">${s.artist}</span></span>
-            <span class="venue">${s.venue} · ${s.city}</span>
+            <span class="venue">${s.venue}<br>${s.city}</span>
             <span class="tag tag-${s.type}">${s.type}</span>
             <span class="chevron">▾</span>
           </div>
