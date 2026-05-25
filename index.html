@@ -36,6 +36,9 @@
     }
     header {
       margin-bottom: 1.75rem;
+      display: flex;
+      align-items: baseline;
+      gap: 1.5rem;
     }
     h1 {
       font-family: 'Libre Baskerville', Georgia, serif;
@@ -49,6 +52,16 @@
       transition: color 0.12s;
     }
     h1:hover { color: var(--amber-text); }
+    .header-link {
+      font-family: 'Libre Baskerville', Georgia, serif;
+      font-size: 2rem;
+      font-weight: 400;
+      letter-spacing: -0.02em;
+      color: var(--muted);
+      text-decoration: none;
+      transition: color 0.12s;
+    }
+    .header-link:hover { color: var(--text); }
     .controls {
       display: flex;
       align-items: center;
@@ -414,6 +427,7 @@
 
   <header>
     <h1 id="reset-title" title="reset all filters">show log</h1>
+    <a href="https://spaffworld.space" class="header-link">spaffworld.space</a>
   </header>
 
   <div class="controls">
@@ -447,7 +461,7 @@
   <div id="show-list"></div>
 
   <script>
-                    /* SHOWS_START */
+                            /* SHOWS_START */
     const shows = [
       {
         "date": "2026-05-16",
@@ -562,7 +576,8 @@
         "venue": "Durham Performing Arts Center",
         "city": "Durham, NC",
         "type": "attended",
-        "rating": "",
+        "fav": false,
+        "rating": 6.3,
         "sets": [
           {
             "label": "Set",
@@ -576,8 +591,7 @@
         "notes": "This was the fifth show of the Oneness Tour and Santana's first appearance in Durham since 3/18/77 (Cameron Indoor Stadium, Duke Univ.). **Toussaint L'Ouverture** contained While My Guitar Gently Weeps (The Beatles) teases.",
         "review": "",
         "source": "",
-        "listened": [],
-        "fav": false
+        "listened": []
       },
       {
         "date": "2026-03-19",
@@ -585,7 +599,8 @@
         "venue": "Neighborhood Theatre",
         "city": "Charlotte, NC",
         "type": "attended",
-        "rating": "",
+        "fav": false,
+        "rating": 6.3,
         "sets": [
           {
             "label": "Set I",
@@ -603,8 +618,7 @@
         "notes": "This was the fifth show of the March 2026 Tour and the band's first appearance at the Neighborhood Theatre since 9/23/17.",
         "review": "Wasn't totally sure what to expect, wasn't totally convinced, but still had a good time. Met Mike preshow!",
         "source": "",
-        "listened": [],
-        "fav": false
+        "listened": []
       },
       {
         "date": "2026-03-03",
@@ -622,6 +636,10 @@
           {
             "label": "Set II",
             "songs": "==Gold Glittered Hat -> Comfortable -> Darkness Singularity=="
+          },
+          {
+            "label": "Encore",
+            "songs": "Legend, Frog Gossip"
           }
         ],
         "notes": "This was the first show of the 2026 Spring Tour and the band's first appearance in Greensboro since 2/3/20 (Blind Tiger), ending a **460 show gap**. This was the first show to feature Nick's Behringer RD-9 Analog Drum Machine. **In the Eyes of Thieves** contained a Guadalajara (Pepe Guízar) tease from Cory. **Gold Glittered Hat** contained a **Comfortable** tease from Cory and Shon. **Comfortable** contained a Dayzed Inn Daydreams (Ariel Pink) and a Love Shack (The B-52's) tease from Shon. **Darkness Singularity** contained numerous **Plush** teases from Nick.",
@@ -658,18 +676,22 @@
         "venue": "Flat Iron",
         "city": "Greensboro, NC",
         "type": "attended",
+        "fav": false,
         "rating": 7,
         "sets": [
           {
             "label": "Set",
             "songs": "People Please, Chester > Rolex > ?, ?, ?, Poison"
+          },
+          {
+            "label": "Set II",
+            "songs": "**This set is currently unknown.**"
           }
         ],
         "notes": "",
         "review": "Lots of chompers. Old school Flat Iron vibe where there's way too many people and it's way too hot. I remember it being one set and surprised at how quickly it was over.",
         "source": "",
-        "listened": [],
-        "fav": false
+        "listened": []
       },
       {
         "date": "2025-12-02",
