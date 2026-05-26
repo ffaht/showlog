@@ -272,7 +272,7 @@
       padding: 1.25rem 0.6rem 1.4rem;
       border-top: 1px solid var(--divider);
       display: grid;
-      grid-template-columns: 1fr 260px;
+      grid-template-columns: 1fr 1fr;
       gap: 0 1.5rem;
     }
     .setlist-block .set-section:last-child { margin-bottom: 0; }
@@ -303,11 +303,8 @@
     .set-songs .hl strong,
     .set-songs .hl i { font-style: normal; }
 
-    .notes-block {
-      border-left: 1px solid var(--divider);
-      padding-left: 1.25rem;
-    }
-    .notes-block.empty { border-left: none; padding-left: 0; }
+    .notes-block.empty { display: none; }
+    .notes-block { min-width: 0; }
     /* shared small caps label */
     .notes-label, .review-label {
       font-size: 0.6rem;
@@ -331,7 +328,7 @@
       font-style: italic;
       font-family: 'IBM Plex Mono', 'Courier New', monospace;
     }
-    /* review: sidebar, upright */
+    /* review: right sidebar */
     .review-inline { margin-bottom: 1rem; }
     .review-text {
       font-size: 0.84rem;
@@ -340,6 +337,7 @@
       line-height: 1.7;
       font-style: normal;
       font-family: 'IBM Plex Mono', 'Courier New', monospace;
+      overflow-wrap: break-word;
     }
     /* emphasis inside notes + review (markers always win over the default) */
     .notes-text em, .review-text em { font-style: italic; font-weight: 600; }
@@ -528,7 +526,7 @@
         ],
         "notes": "This was the first show of the Fountain of Youth 20th Anniversary Tour and the first night of a two night run at Greenfield Lake. **Lonnie Walker** was the opening act. This show featured the live debuts of **Six Weeks** and **As Long as You Are**, along with the first **Fountain** since 9/23/15 (The Observatory, San Diego, CA), the first **Cotton Flower** since 11/19/12 (Beachland Ballroom, Cleveland, OH), and the first **One Day** since 9/16/18 (The Observatory, Santa Ana, CA). Before **Vireo's Eye**, Sam dedicated the encore to his parents who were in attendance.",
         "review": "",
-        "source": "You are all I need\nNothing said could change a thing\nWhere you go \nI'll go\nJust say\nI'll be",
+        "source": "There's life in this tunnel\nWe're just hanging around\nPlease, if you see my hand\nJust pull me out",
         "listened": []
       },
       {
@@ -637,8 +635,8 @@
             "songs": "Sweet Emotion"
           }
         ],
-        "notes": "This was the fifth show of the March 2026 Tour and the band's first appearance at the Neighborhood Theatre since 9/23/17.",
-        "review": "Wasn't totally sure what to expect, wasn't totally convinced, but still had a good time. Met Mike preshow!",
+        "notes": "This was the fifth show of the March 2026 Tour and the band's first appearance at the Neighborhood Theatre since 9/23/17. **Call Me the Breeze** contained Rehab (Amy Winehouse) quotes and teases.",
+        "review": "Wasn't totally sure what to expect, wasn't totally convinced. Met Mike preshow!",
         "source": "",
         "listened": []
       },
@@ -755,6 +753,52 @@
         ]
       },
       {
+        "date": "2025-07-19",
+        "artist": "Fonville Fribush and Hunter",
+        "venue": "Purple House",
+        "city": "Greensboro, NC",
+        "type": "attended",
+        "fav": true,
+        "rating": 8.3,
+        "sets": [
+          {
+            "label": "Set",
+            "songs": "_****This show date is unconfirmed and may have taken place on 5/24 or 6/28. This setlist is currently incomplete and  unconfirmed, but did feature **People Please**, **Chester**, and **Poison**. For the entire show, Sam played bass with his left hand. **** _"
+          }
+        ],
+        "notes": "",
+        "review": "",
+        "source": "This show was not taped.",
+        "listened": []
+      },
+      {
+        "date": "2025-07-11",
+        "artist": "Phish",
+        "venue": "North Charleston Coliseum",
+        "city": "North Charleston, SC",
+        "type": "attended",
+        "fav": false,
+        "rating": 7.3,
+        "sets": [
+          {
+            "label": "Set I",
+            "songs": "Free, Rift, Spanish Moon, Reba, Devotion to a Dream, The Final Hurrah, My Mind's Got a Mind of its Own, Hey Stranger, Taste, Walls of the Cave"
+          },
+          {
+            "label": "Set II",
+            "songs": "Llama > Down with Disease > Twist, The Well, Sightless Escape -> Chalk Dust Torture, Suzy Greenberg"
+          },
+          {
+            "label": "Encore",
+            "songs": "When the Circus Comes, First Tube"
+          }
+        ],
+        "notes": "**Reba** did not contain the whistling ending. **Devotion to a Dream** was played for the first time since October 15, 2016 (322 shows), and **My Mind's Got a Mind of its Own** for the first time since May 28, 2022 (149 shows). Trey teased Mr. P.C. in **Hey Stranger**. **Llama** was performed in a slow, funky arrangement and included a **Tweezer** tease from Page. Trey teased Let It Grow (Grateful Dead) in **Sightless Escape**.",
+        "review": "I GOT MY FUCKING DEVOTION TO A DREAM!!!!!!!!!!!",
+        "source": "",
+        "listened": []
+      },
+      {
         "date": "2025-05-31",
         "artist": "Sam Fribush Organ Trio",
         "venue": "Flat Iron",
@@ -824,13 +868,90 @@
         "listened": []
       },
       {
+        "date": "2025-04-17",
+        "artist": "Spafford",
+        "venue": "COHAB.space",
+        "city": "High Point, NC",
+        "type": "attended",
+        "fav": true,
+        "rating": 9,
+        "sets": [
+          {
+            "label": "Set I",
+            "songs": "==Hollywood==-> ==Fake the Fate== -> ==Darkness Singularity=="
+          },
+          {
+            "label": "Set II",
+            "songs": "==Night After Night==, Windmill -> Galisteo Way"
+          },
+          {
+            "label": "Encore",
+            "songs": "I Wouldn't Want to Be Like You"
+          }
+        ],
+        "notes": "This was the 16th show of the 2025 Spring Tour and the band's first appearance in High Point since 4/27/22 (Cohab), ending a **299 show gap**. **Sam Fribush Organ Trio** was the opening act. **Hollywood** contained Harry Hood (Phish) teases from Cory, a We Are Come to Outlive Our Brains (Phish) tease from Brian, and featured a train passing by the venue. **Fake the Fate** contained Genius of Love (Tom Tom Club) teases from Cory and Shakedown Street (Grateful Dead) teases from Shon. **Darkness Singularity** contained several Welcome to the Future samples from Cory, Can't Catch Me Now (Olivia Rodrigo) teases from Brian, and a Fred Flintstone quote from Cory.",
+        "review": "",
+        "source": "",
+        "listened": []
+      },
+      {
+        "date": "2025-04-17",
+        "artist": "Sam Fribush Organ Trio",
+        "venue": "COHAB.space",
+        "city": "High Point, NC",
+        "type": "attended",
+        "fav": true,
+        "rating": 8,
+        "sets": [
+          {
+            "label": "Set",
+            "songs": "People Please, Chester, Rolex, Fly Like an Eagle, Poison"
+          }
+        ],
+        "notes": "This setlist is unconfirmed and may or may not have featured **Rolex**. This was an opening set for **Spafford**.",
+        "review": "Will was really crushing it.",
+        "source": "",
+        "listened": []
+      },
+      {
+        "date": "1994-06-11",
+        "artist": "Phish",
+        "venue": "Red Rocks Amphitheatre",
+        "city": "Morrison, CO",
+        "type": "listened",
+        "fav": true,
+        "rating": 8.2,
+        "sets": [
+          {
+            "label": "Set I",
+            "songs": "Wilson > Chalk Dust Torture, You Enjoy Myself > Rift, Down with Disease, It's Ice > Tela, Stash"
+          },
+          {
+            "label": "Set II",
+            "songs": "Also Sprach Zarathustra > Run Like an Antelope, Fluffhead, Scent of a Mule, Split Open and Melt, The Squirming Coil > Maze, Contact, Frankenstein"
+          },
+          {
+            "label": "Encore",
+            "songs": "Suzy Greenberg"
+          }
+        ],
+        "notes": "This was the third show of the 1994 Summer Tour and the second night of a two-night run at Red Rocks. This show was simulcast on KBCO 97.3-FM in Denver and featured the first **Frankenstein** since 7/26/91 (Athens, GA), ending a **333 show gap**. **Antelope** contained an Odd Couple Theme tease from Page and Trey. **Fluffhead** was played by request. **Suzy** contained a **Frankenstein** tease from Trey.",
+        "review": "oh my fucking GOD THIS MELT \n\nRAHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH\n\nWHAT THE FUCKKKKKKKKKKKKKK",
+        "source": "FM -> Dat (48k)Sony PCM-R500 -> Tascam SS-R05 -> Samplitude Professional v11.2.1 -> FLAC \nTransferred by Charlie Miller",
+        "listened": [
+          {
+            "date": "5/25/26"
+          }
+        ]
+      },
+      {
         "date": "1994-06-10",
         "artist": "Phish",
         "venue": "Red Rocks Amphitheatre",
         "city": "Morrison, CO",
         "type": "listened",
         "fav": false,
-        "rating": "",
+        "rating": 8,
         "sets": [
           {
             "label": "Set I",
@@ -1002,7 +1123,7 @@
         const ldReview = selLd !== undefined && ldNorm[selLd] && ldNorm[selLd].review;
         const activeReview = ldReview ? ldNorm[selLd].review : (s.review || '');
         const reviewHtml = activeReview
-          ? `<div class="review-inline" id="review-${s.origIdx}"><span class="review-label">review${ldReview ? ' · '+ldNorm[selLd].date : ''}</span><span class="review-text">${fmt(activeReview)}</span></div>`
+          ? `<div class="review-inline" id="review-${s.origIdx}"><span class="review-label">review${ldReview ? ' · '+ldNorm[selLd].date : ''}</span><span class="review-text">${fmt(activeReview).replace(/\n/g,'<br>')}</span></div>`
           : '';
 
         const listenedHtml = ldNorm.length
