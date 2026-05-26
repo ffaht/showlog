@@ -299,9 +299,6 @@
       color: var(--hl-text);
       font-style: normal;
     }
-    .set-songs .hl em,
-    .set-songs .hl strong,
-    .set-songs .hl i { font-style: normal; }
 
     .notes-block.empty { display: none; }
     .notes-block { min-width: 0; }
@@ -344,8 +341,6 @@
     .notes-text strong, .review-text strong { font-style: normal; font-weight: 500; }
     .notes-text i, .review-text i { font-style: italic; font-weight: 400; }
     .notes-text .hl, .review-text .hl { color: var(--hl-text); font-style: normal; }
-    .notes-text .hl em, .notes-text .hl strong, .notes-text .hl i,
-    .review-text .hl em, .review-text .hl strong, .review-text .hl i { font-style: normal; }
     .source-inline {
       font-size: 0.68rem;
       color: var(--muted);
@@ -753,6 +748,29 @@
         ]
       },
       {
+        "date": "2025-08-09",
+        "artist": "Lotus",
+        "venue": "JamPacked Festival\nBrown's Island",
+        "city": "Richmond, VA",
+        "type": "attended",
+        "fav": false,
+        "rating": "",
+        "sets": [
+          {
+            "label": "Set",
+            "songs": "Suitcases > Mikesnack > You Should Be Dancing, Jump Off, Bush Pilot > Can You Hear the Sound > Sunrain > Mink and Shoes > Sunrain"
+          }
+        ],
+        "notes": "",
+        "review": "Insane tension and release on this *Suitcases* and *Mikesnack*! What a way to start the day!!",
+        "source": "",
+        "listened": [
+          {
+            "date": "5/26/26"
+          }
+        ]
+      },
+      {
         "date": "2025-07-19",
         "artist": "Fonville Fribush and Hunter",
         "venue": "Purple House",
@@ -1133,12 +1151,12 @@
             }).join('<span class="ld-sep"> · </span>')}</span></div>`
           : '';
 
-        const venueHeader = `<div class="expand-venue">${s.artist}<br>${fmtDateFull(s.date)}${s.venue ? '<br>'+s.venue : ''}${s.city ? '<br>'+s.city : ''}</div>`;
+        const venueHeader = `<div class="expand-venue">${s.artist}<br>${fmtDateFull(s.date)}${s.venue ? '<br>'+s.venue.replace(/\n/g,'<br>') : ''}${s.city ? '<br>'+s.city : ''}</div>`;
         return `<div class="show-item${isOpen?' open':''}" data-orig="${s.origIdx}">
           <div class="show-row" onclick="toggle(${s.origIdx})">
             <span class="date">${fmtDate(s.date)}${s.fav ? '<span class="heart">♥</span>' : ''}</span>
             <span class="artist"><span class="artist-name${artistFilter === s.artist ? ' active' : ''}" onclick="filterArtist('${s.artist.replace(/'/g,"\\'")}', event)">${s.artist}</span></span>
-            <span class="venue">${s.venue}<br>${s.city}</span>
+            <span class="venue">${s.venue.replace(/\n/g,'<br>')}<br>${s.city}</span>
             <span class="tag tag-${s.type}">${s.type}</span>
             <span class="chevron">▾</span>
           </div>
